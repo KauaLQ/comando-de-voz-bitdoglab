@@ -11,7 +11,7 @@ import speech_recognition as sr
 PORT = sys.argv[1] if len(sys.argv) > 1 else '/dev/ttyACM0'
 SAMPLE_RATE = 8000
 SAMPLE_WIDTH = 2  # bytes
-DURATION_SEC = 10
+DURATION_SEC = 7
 TRIGGER_THRESHOLD = 20  # sensibilidade (pode ajustar)
 TRIGGER_WINDOW = 100  # tamanho da janela para análise
 

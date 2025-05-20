@@ -8,12 +8,14 @@
 #include "hardware/i2c.h"
 #include "hardware/uart.h"
 #include "functions/ssd1306_i2c.h"
+#include "functions/buzzer.h"
 
 #define ADC_PIN 28
 #define SAMPLE_RATE_HZ 8000
 #define MAX_LINE_LEN 128
 
 #define LED_PIN 13     // Pino onde o LED está conectado
+#define BUZZER_PIN 21
 
 char input_line[MAX_LINE_LEN];
 int input_pos = 0;
@@ -39,16 +41,27 @@ bool audio_sample_callback(repeating_timer_t *t) {
 void process_received_line(char* line) {
     // Mostra no OLED
     memset(buf, 0, SSD1306_BUF_LEN);
-    WriteString(buf, 0, 0, line);
+    WriteString(buf, 0, 32, line);
     render(buf, &frame_area);
 
     // Aqui você pode comparar "line" e executar comandos:
-    if (strstr(line, "acender") != NULL || strstr(line, "Acender") != NULL) {
+    if (strstr(line, "acender") != NULL || strstr(line, "Acender" ) != NULL || strstr(line, "Acende") != NULL || strstr(line, "acende") != NULL) {
         gpio_put(LED_PIN, 1);
-    } else if (strstr(line, "apagar") != NULL || strstr(line, "Apagar") != NULL) {
+    } else if (strstr(line, "apagar") != NULL || strstr(line, "Apagar") != NULL || strstr(line, "Apaga") != NULL || strstr(line, "apaga") != NULL) {
         gpio_put(LED_PIN, 0);
     }
-    // Mais comandos aqui...
+    else if (strstr(line, "piscar") != NULL || strstr(line, "Piscar") != NULL || strstr(line, "pisca") != NULL || strstr(line, "Pisca") != NULL) {
+        for(int i = 0; i<5; i++){
+            gpio_put(LED_PIN, 1);
+            sleep_ms(300);
+            gpio_put(LED_PIN, 0);
+            sleep_ms(300);
+        }
+    }
+    else if (strstr(line, "tocar") != NULL || strstr(line, "Tocar") != NULL || strstr(line, "Toca") != NULL || strstr(line, "Tocar") != NULL) {
+        // Teste com beep simples
+        beep(BUZZER_PIN, 2000);
+    }
 }
 
 int main() {
@@ -61,6 +74,8 @@ int main() {
     gpio_set_dir(LED_PIN, GPIO_OUT);
     gpio_put(LED_PIN, 0); // Desliga o LED inicialmente
 
+    pwm_init_buzzer(BUZZER_PIN); // inicializa o buzzer
+
     //configuração do display ssd1306
     i2c_init(i2c_default, 400 * 1000);
     gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
@@ -71,8 +86,6 @@ int main() {
 
     memset(buf, 0, SSD1306_BUF_LEN);
     calc_render_area_buflen(&frame_area);
-
-    // WriteString(buf, 35, 32, "OUVINDO");
 
     render(buf, &frame_area);
 

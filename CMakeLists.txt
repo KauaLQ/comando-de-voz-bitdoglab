@@ -38,6 +38,7 @@ pico_sdk_init()
 add_executable(microphone_adc
         microphone_adc.c
         functions/ssd1306_i2c
+        functions/buzzer
         )
 
 # pull in common dependencies and adc hardware support
@@ -48,6 +49,7 @@ target_link_libraries(microphone_adc
         hardware_gpio
         hardware_i2c
         hardware_uart
+        hardware_pwm
         pico_stdio_usb)
 
 # create map/bin/hex file etc.
