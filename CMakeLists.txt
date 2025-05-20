@@ -41,7 +41,14 @@ add_executable(microphone_adc
         )
 
 # pull in common dependencies and adc hardware support
-target_link_libraries(microphone_adc pico_stdlib hardware_adc pico_stdio_usb hardware_i2c)
+target_link_libraries(microphone_adc
+        pico_stdlib
+        hardware_adc
+        hardware_timer
+        hardware_gpio
+        hardware_i2c
+        hardware_uart
+        pico_stdio_usb)
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(microphone_adc)
